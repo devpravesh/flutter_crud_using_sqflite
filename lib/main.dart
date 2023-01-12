@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_crud_using_sqflite/adduser.dart';
 
 import 'sql_helper.dart';
 
@@ -177,10 +178,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: const Icon(Icons.add),
-        onPressed: () => _showForm(null),
-      ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: const Icon(Icons.add),
+          // onPressed: () => _showForm(null),
+          onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: ((context) => const Adduser())))),
     );
   }
 }
