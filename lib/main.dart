@@ -33,7 +33,6 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _journals = [];
 
   bool _isLoading = true;
-  // This function is used to fetch all data from the database
   void _refreshJournals() async {
     final data = await SQLHelper.getItems();
     setState(() {
@@ -45,94 +44,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _refreshJournals(); // Loading the diary when the app starts
-  }
-
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
-  // This function will be triggered when the floating button is pressed
-  // It will also be triggered when you want to update an item
-  void _showForm(int? id) async {
-    if (id != null) {
-      // id == null -> create new item
-      // id != null -> update an existing item
-      final existingJournal =
-          _journals.firstWhere((element) => element['id'] == id);
-      _titleController.text = existingJournal['title'];
-      _descriptionController.text = existingJournal['description'];
-    }
-
-    showModalBottomSheet(
-        context: context,
-        elevation: 5,
-        isScrollControlled: true,
-        builder: (_) => Container(
-              padding: EdgeInsets.only(
-                top: 15,
-                left: 15,
-                right: 15,
-                // this will prevent the soft keyboard from covering the text fields
-                bottom: MediaQuery.of(context).viewInsets.bottom + 120,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TextField(
-                    controller: _titleController,
-                    decoration: const InputDecoration(hintText: 'Title'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(hintText: 'Description'),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // Save new journal
-                      if (id == null) {
-                        await _addItem();
-                      }
-
-                      if (id != null) {
-                        await _updateItem(id);
-                      }
-
-                      // Clear the text fields
-                      _titleController.text = '';
-                      _descriptionController.text = '';
-
-                      // Close the bottom sheet
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(id == null ? 'Create New' : 'Update'),
-                  )
-                ],
-              ),
-            ));
-  }
-
-// Insert a new journal to the database
-  Future<void> _addItem() async {
-    await SQLHelper.createItem(
-        _titleController.text, _descriptionController.text);
     _refreshJournals();
   }
 
-  // Update an existing journal
-  Future<void> _updateItem(int id) async {
-    await SQLHelper.updateItem(
-        id, _titleController.text, _descriptionController.text);
-    _refreshJournals();
-  }
-
-  // Delete an item
   void _deleteItem(int id) async {
     await SQLHelper.deleteItem(id);
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -143,6 +57,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _refreshJournals();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter CRUD using sqflite'),
@@ -151,39 +66,151 @@ class _HomePageState extends State<HomePage> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              itemCount: _journals.length,
-              itemBuilder: (context, index) => Card(
-                color: Colors.orange[200],
-                margin: const EdgeInsets.all(15),
-                child: ListTile(
-                    title: Text(_journals[index]['title']),
-                    subtitle: Text(_journals[index]['description']),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _showForm(_journals[index]['id']),
+          : _journals.isEmpty
+              ? const Center(
+                  child: Text(
+                  "No Data Found",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ))
+              : ListView.builder(
+                  itemCount: _journals.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                        elevation: 2,
+                        color: Colors.white,
+                        margin: const EdgeInsets.all(15),
+                        child: Container(
+                          child: Column(
+                            // mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  SizedBox(
+                                    width: 100,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.edit),
+                                          onPressed: () => Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                                  builder: ((context) =>
+                                                      Adduser(
+                                                          id: _journals[index]
+                                                              ['id'])))),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete),
+                                          onPressed: () => _deleteItem(
+                                              _journals[index]['id']),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(7.0),
+                                      child: Text(
+                                        _journals[index]['name'],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(7.0),
+                                      child: Text(
+                                        _journals[index]['mobile'],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: Color.fromARGB(
+                                                255, 49, 48, 48)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(7.0),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            _journals[index]['address'],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Color.fromARGB(
+                                                    255, 49, 48, 48)),
+                                          ),
+                                          Text(
+                                            _journals[index]['landmark'],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Color.fromARGB(
+                                                    255, 49, 48, 48)),
+                                          ),
+                                          Text(
+                                            " - " + _journals[index]['pincode'],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Color.fromARGB(
+                                                    255, 49, 48, 48)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () =>
-                                _deleteItem(_journals[index]['id']),
-                          ),
-                        ],
-                      ),
-                    )),
-              ),
-            ),
+                        )
+                        // ListTile(
+
+                        //     title: Text(_journals[index]['name']),
+                        //     subtitle: Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         Text(_journals[index]['mobile']),
+                        //         Text(_journals[index]['address']),
+                        //       ],
+                        //     ),
+                        //     trailing: SizedBox(
+                        //       width: 100,
+                        //       child: Row(
+                        //         children: [
+                        //           IconButton(
+                        //             icon: const Icon(Icons.edit),
+                        //             onPressed: () => Navigator.of(context).push(
+                        //                 MaterialPageRoute(
+                        //                     builder: ((context) => Adduser(
+                        //                         id: _journals[index]['id'])))),
+                        //           ),
+                        //           IconButton(
+                        //             icon: const Icon(Icons.delete),
+                        //             onPressed: () =>
+                        //                 _deleteItem(_journals[index]['id']),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     )),
+                        );
+                  }),
       floatingActionButton: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: const Icon(Icons.add),
           // onPressed: () => _showForm(null),
-          onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: ((context) => const Adduser())))),
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: ((context) => Adduser(
+                    id: null,
+                  ))))),
     );
   }
 }

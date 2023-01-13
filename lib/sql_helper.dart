@@ -5,8 +5,11 @@ class SQLHelper {
   static Future<void> createTables(sql.Database database) async {
     await database.execute("""CREATE TABLE items(
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        title TEXT,
-        description TEXT,
+        name TEXT,
+        mobile TEXT,
+        address TEXT,
+        landmark TEXT,
+        pincode TEXT,
         createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
       """);
@@ -17,7 +20,7 @@ class SQLHelper {
 
   static Future<sql.Database> db() async {
     return sql.openDatabase(
-      'kindacode.db',
+      'crud.db',
       version: 1,
       onCreate: (sql.Database database, int version) async {
         await createTables(database);
@@ -26,10 +29,17 @@ class SQLHelper {
   }
 
   // Create new item (journal)
-  static Future<int> createItem(String title, String? descrption) async {
+  static Future<int> createItem(
+      String name, String? mobile, address, landmark, pincode) async {
     final db = await SQLHelper.db();
 
-    final data = {'title': title, 'description': descrption};
+    final data = {
+      'name': name,
+      'mobile': mobile,
+      'address': address,
+      'landmark': landmark,
+      'pincode': pincode
+    };
     final id = await db.insert('items', data,
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
     return id;
@@ -50,12 +60,15 @@ class SQLHelper {
 
   // Update an item by id
   static Future<int> updateItem(
-      int id, String title, String? descrption) async {
+      int id, String name, String? mobile, address, landmark, pincode) async {
     final db = await SQLHelper.db();
 
     final data = {
-      'title': title,
-      'description': descrption,
+      'name': name,
+      'mobile': mobile,
+      'address': address,
+      'landmark': landmark,
+      'pincode': pincode,
       'createdAt': DateTime.now().toString()
     };
 
