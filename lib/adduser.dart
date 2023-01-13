@@ -202,18 +202,14 @@ class _AdduserState extends State<Adduser> {
                           _landmarkController.text = '';
                           _pincodeController.text = '';
 
-                          // Close the bottom sheet
                           Navigator.of(context).pop();
-                          // },
-                          // child: Text(id == null ? 'Create New' : 'Update')
                         },
                         child: Container(
                           decoration: const BoxDecoration(
                             color: Colors.black,
                             border: Border(),
-                            borderRadius: BorderRadius.all(Radius.circular(
-                                    5.0) //                 <--- border radius here
-                                ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(10),

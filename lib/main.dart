@@ -29,7 +29,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // All journals
   List<Map<String, dynamic>> _journals = [];
 
   bool _isLoading = true;
@@ -81,7 +80,6 @@ class _HomePageState extends State<HomePage> {
                         margin: const EdgeInsets.all(15),
                         child: Container(
                           child: Column(
-                            // mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
@@ -170,43 +168,12 @@ class _HomePageState extends State<HomePage> {
                               )
                             ],
                           ),
-                        )
-                        // ListTile(
-
-                        //     title: Text(_journals[index]['name']),
-                        //     subtitle: Column(
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         Text(_journals[index]['mobile']),
-                        //         Text(_journals[index]['address']),
-                        //       ],
-                        //     ),
-                        //     trailing: SizedBox(
-                        //       width: 100,
-                        //       child: Row(
-                        //         children: [
-                        //           IconButton(
-                        //             icon: const Icon(Icons.edit),
-                        //             onPressed: () => Navigator.of(context).push(
-                        //                 MaterialPageRoute(
-                        //                     builder: ((context) => Adduser(
-                        //                         id: _journals[index]['id'])))),
-                        //           ),
-                        //           IconButton(
-                        //             icon: const Icon(Icons.delete),
-                        //             onPressed: () =>
-                        //                 _deleteItem(_journals[index]['id']),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     )),
-                        );
+                        ));
                   }),
       floatingActionButton: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: const Icon(Icons.add),
-          // onPressed: () => _showForm(null),
           onPressed: () => Navigator.of(context).push(MaterialPageRoute(
               builder: ((context) => Adduser(
                     id: null,
